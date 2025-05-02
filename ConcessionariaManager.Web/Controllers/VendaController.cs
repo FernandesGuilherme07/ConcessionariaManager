@@ -171,12 +171,12 @@ namespace ConcessionariaManager.Web.Controllers
         }
 
         // POST: Venda/Cancelar/5
-        [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Vendedor")]
-        public async Task<IActionResult> ConfirmarCancelamento(int id, string motivoCancelamento)
+        [HttpPost]
+        public async Task<IActionResult> ConfirmarCancelamento(int id, string MotivoDoCancelameto)
         {
-            if (string.IsNullOrWhiteSpace(motivoCancelamento))
+            if (string.IsNullOrWhiteSpace(MotivoDoCancelameto))
             {
                 ModelState.AddModelError("MotivoDoCancelameto", "O motivo do cancelamento é obrigatório.");
                 return await Cancelar(id);
@@ -199,7 +199,7 @@ namespace ConcessionariaManager.Web.Controllers
             try
             {
                 venda.Cancelada = true;
-                venda.MotivoDoCancelameto = motivoCancelamento;
+                venda.MotivoDoCancelameto = MotivoDoCancelameto;
                 venda.Veiculo!.Vendido = false;
 
                 _context.Vendas.Update(venda);

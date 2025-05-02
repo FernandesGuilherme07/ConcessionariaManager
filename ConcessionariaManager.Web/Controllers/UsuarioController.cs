@@ -67,6 +67,7 @@ public class UsuarioController : Controller
 
         return View(model);
     }
+    [HttpPost]
     public async Task<IActionResult> Edit(UserEditViewModel model)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
