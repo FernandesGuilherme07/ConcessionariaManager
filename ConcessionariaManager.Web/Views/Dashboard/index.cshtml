@@ -1,0 +1,103 @@
+﻿@using ConcessionariaManager.Web.Controllers
+@using ConcessionariaManager.Core.Models.Dashboard
+@model VendaRelatorioViewModel
+
+@{
+    var hoje = DateTime.Today.ToString("yyyy-MM-dd");
+    ViewData["Title"] = "Dashboard de Vendas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">Dashboard de Vendas</h1>
+</div>
+
+<form id="form-relatorio" asp-action="GerarRelatorio" method="post" class="mb-4">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label for="dataInicio" class="form-label">Data Início</label>
+            <input type="date" class="form-control" id="dataInicio" name="dataInicio"
+                   value="@Model.DataInicio?.ToString("yyyy-MM-dd")" max="@hoje" required>
+        </div>
+        <div class="col-md-3">
+            <label for="dataFim" class="form-label">Data Fim</label>
+            <input type="date" class="form-control" id="dataFim" name="dataFim"
+                   value="@Model.DataFim?.ToString("yyyy-MM-dd")" max="@hoje" required>
+        </div>
+        <div class="col-md-auto">
+            <button type="submit" class="btn btn-primary">Gerar Relatório</button>
+        </div>
+    </div>
+</form>
+<div class="col-md-auto mb-4">
+	<button class="btn btn-outline-success me-2" onclick="exportar('excel')">Exportar Excel</button>
+</div>
+
+
+<div id="relatorio-container">
+    @await Html.PartialAsync("_RelatorioDashboardPartial", Model)
+</div>
+
+@section Scripts {
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let chartInstances = {};
+
+        function renderChart(canvasId, label, data) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+
+            console.log("ctx", ctx)
+            console.log("chartInstances[canvasId]", chartInstances[canvasId])
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+
+           chartInstances[canvasId] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data),
+                    datasets: [{
+                        label: label,
+                        data: Object.values(data),
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                }
+            });
+        }
+        renderChart("graficoTipoVeiculo", "Vendas por Tipo de Veículo", @Html.Raw(Json.Serialize(Model.VendasPorTipoVeiculo)));
+        renderChart("graficoFabricante", "Vendas por Fabricante", @Html.Raw(Json.Serialize(Model.VendasPorFabricante)));
+        renderChart("graficoConcessionaria", "Vendas por Concessionária", @Html.Raw(Json.Serialize(Model.VendasPorConcessionaria)));
+
+        function exportar(tipo) {
+            const form = $('<form>', { method: 'post', action: `/Dashboard/ExportarExcel` });
+            form.append(`<input type="hidden" name="dataInicio" value="${$('#dataInicio').val()}" />`);
+            form.append(`<input type="hidden" name="dataFim" value="${$('#dataFim').val()}" />`);
+            $('body').append(form);
+            form.submit();
+        }
+
+        function validarRangeDatas(inicio, fim) {
+            const dtInicio = new Date(inicio);
+            const dtFim = new Date(fim);
+            const umMes = 1000 * 60 * 60 * 24 * 31;
+            return (dtFim - dtInicio) <= umMes && dtInicio <= dtFim;
+        }
+
+        $(document).ready(function () {
+            const hoje = new Date();
+            const trintaDiasAtras = new Date();
+            trintaDiasAtras.setDate(hoje.getDate() - 30);
+
+            $("#dataFim").val(hoje.toISOString().split('T')[0]);
+            $("#dataInicio").val(trintaDiasAtras.toISOString().split('T')[0]);
+        });
+    </script>
+}

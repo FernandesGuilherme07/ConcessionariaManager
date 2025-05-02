@@ -1,0 +1,43 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <ul class="navbar-nav flex-grow-1">
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Fabricante" asp-action="Index">Fabricantes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Veiculo" asp-action="Index">Veículos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Concessionaria" asp-action="Index">Concessionárias</a>
+            </li>
+
+			<li class="nav-item">
+				<a class="nav-link text-dark" asp-area="" asp-controller="Venda" asp-action="Index">Vendas</a>
+			</li>
+			@if (User.IsInRole("Administrador"))
+			{
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Usuario" asp-action="Index">Usuários</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="AccessDeniedLogs" asp-action="Index">Acessos Negados</a>
+                </li>
+            }
+
+        </ul>
+
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Dashboard", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark">Sair</button>
+                </form>
+            </li>
+        </ul>
+    }
+</div>

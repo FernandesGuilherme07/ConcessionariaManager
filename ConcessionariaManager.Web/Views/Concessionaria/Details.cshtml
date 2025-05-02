@@ -1,0 +1,48 @@
+@model ConcessionariaManager.Core.Models.Concessionaria
+
+@{
+    ViewData["Title"] = "Detalhes da Concessionária";
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Detalhes da Concessionária</h2>
+
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
+        <dl class="row">
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Nome)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.Nome)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Telefone)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.Telefone)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Email)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.Email)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.CapacidadeMaximaDeVeiculos)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.CapacidadeMaximaDeVeiculos)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.CreatedAt)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.CreatedAt)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.UpdatedAt)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.UpdatedAt)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Endereco.Rua)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.Endereco.Rua)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Endereco.Cidade)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.Endereco.Cidade)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Endereco.Estado)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.Endereco.Estado)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Endereco.CEP)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.Endereco.CEP)</dd>
+        </dl>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Editar</a>
+            <a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+        </div>
+    </div>
+</div>

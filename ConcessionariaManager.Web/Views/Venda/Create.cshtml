@@ -1,0 +1,123 @@
+﻿@model ConcessionariaManager.Core.Models.Venda
+
+@{
+    ViewData["Title"] = "Realizar Venda";
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">@ViewData["Title"]</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form asp-action="Create" class="card shadow-sm p-4">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="ConcessionariaId" class="form-label"></label>
+                    <select asp-for="ConcessionariaId" id="ConcessionariaId"  class="form-control" asp-items="ViewBag.ConcessionariaId">
+                        <option value="">Selecione a concessionária</option>
+                    </select>
+                    <span asp-validation-for="ConcessionariaId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="VeiculoId" class="form-label"></label>
+                    <select asp-for="VeiculoId" id="VeiculoId" class="form-control" asp-items="ViewBag.VeiculoId">
+                        <option value="">Selecione o veículo</option>
+                    </select>
+                    <span asp-validation-for="VeiculoId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="NomeCliente" class="form-label">Nome do Cliente</label>
+                    <input asp-for="NomeCliente" class="form-control" />
+                    <span asp-validation-for="NomeCliente" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="CPFCliente" class="form-label">CPF do Cliente</label>
+                    <input asp-for="CPFCliente" class="form-control" id="cpfCliente" />
+                    <span asp-validation-for="CPFCliente" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="TelefoneCliente" class="form-label">Telefone</label>
+                    <input asp-for="TelefoneCliente" class="form-control" id="telefoneCliente" />
+                    <span asp-validation-for="TelefoneCliente" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="DataVenda" class="form-label">Data da Venda</label>
+                    <input asp-for="DataVenda" class="form-control" type="date" />
+                    <span asp-validation-for="DataVenda" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="PrecoVendaStringView" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">R$</span>
+                        <input asp-for="PrecoVendaStringView" class="form-control" id="PrecoVenda" type="text" />
+                    </div>
+                    <span asp-validation-for="PrecoVendaStringView" class="text-danger"></span>
+                </div>
+                <div id="message-container" class="mb-4"></div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+                    <button type="submit" class="btn btn-success">Finalizar Venda</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                $('#ConcessionariaId').change(function () {
+                    var concessionariaId = $(this).val();
+                    if (concessionariaId) {
+                        $.getJSON('/Venda/ObterVeiculosPorConcessionaria', { concessionariaId: concessionariaId }, function (data) {
+                            var veiculoSelect = $('#VeiculoId');
+
+                            console.log("passei")
+                            veiculoSelect.empty();
+                            veiculoSelect.append('<option value="">Selecione o veículo</option>');
+                            $.each(data, function (i, veiculo) {
+                                veiculoSelect.append('<option value="' + veiculo.id + '">' + veiculo.modelo + '</option>');
+                            });
+                        });
+                    } else {
+                        $('#VeiculoId').empty().append('<option value="">Selecione o veículo</option>');
+                    }
+                });
+            });
+            $(document).ready(function () {
+                // Corrigido campo de CPF
+                $('input[name="CPFCliente"]').mask('999.999.999-99', { reverse: true });
+
+                // Corrigido máscara de telefone
+                $("#telefoneCliente").inputmask({
+                    mask: ['(99) 9999-9999', '(99) 99999-9999'],
+                    onBeforePaste: function (pastedValue, opts) {
+                        var cleaned = pastedValue.replace(/\D/g, '');
+                        return cleaned.length === 10 ? "(99) 9999-9999" : "(99) 99999-9999";
+                    },
+                    onKeyValidation: function (key, result) {
+                        if (result) {
+                            var value = $("#telefoneCliente").val();
+                            if (value.indexOf('_') !== -1) {
+                                $("#telefoneCliente").val(value.replace('_', ''));
+                            }
+                        }
+                    }
+                });
+            )};
+		</script>
+	}
+}

@@ -1,0 +1,62 @@
+﻿@using ConcessionariaManager.Web.Controllers
+@using ConcessionariaManager.Core.Models.AccessDeniedLog
+@model AccessDeniedLogViewModel
+
+@{
+    ViewData["Title"] = "Registros de Acesso Negado";
+}
+
+<div class="container py-5">
+    <h1 class="mb-4">Registros de Acesso Negado</h1>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <input type="text" name="userName" class="form-control" placeholder="Usuário"
+                   value="@Model.UserName" />
+        </div>
+        <div class="col-md-3">
+            <input type="date" name="date" class="form-control"
+                   value="@(Model.Date?.ToString("yyyy-MM-dd"))" />
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">Limpar</a>
+        </div>
+    </form>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Usuário</th>
+                <th>ID do Usuário</th>
+                <th>Página Tentada</th>
+                <th>IP / Localização</th>
+                <th>Data e Hora (UTC)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model.Logs)
+            {
+                    <tr>
+                        <td>@log.UserName</td>
+                        <td>@log.UserId</td>
+                        <td>@log.AttemptedUrl</td>
+                        <td>@log.Location</td>
+                        <td>@log.AccessDateTime.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                    </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Paginação -->
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { userName = Model.UserName, date = Model.Date?.ToString("yyyy-MM-dd"), page = i })">@i</a>
+                    </li>
+            }
+        </ul>
+    </nav>
+</div>

@@ -1,0 +1,97 @@
+@model ConcessionariaManager.Core.Models.Veiculo
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Editar Veículo</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-action="Edit" class="card shadow-sm p-4">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Modelo" class="form-label"></label>
+                    <input asp-for="Modelo" class="form-control" />
+                    <span asp-validation-for="Modelo" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="AnoFabricacao" class="form-label"></label>
+                    <input asp-for="AnoFabricacao" class="form-control" />
+                    <span asp-validation-for="AnoFabricacao" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Placa" class="form-label"></label>
+                    <input asp-for="Placa" class="form-control" />
+                    <span asp-validation-for="Placa" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="PrecoStringView" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">R$</span>
+                        <input asp-for="PrecoStringView" class="form-control" id="precoInput" type="text" />
+                    </div>
+                    <span asp-validation-for="PrecoStringView" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="TipoVeiculo" class="form-label"></label>
+                    <select asp-for="TipoVeiculo" class="form-control"
+                            asp-items="Html.GetEnumSelectList<ConcessionariaManager.Core.Enums.TipoVeiculo>()">
+                        <option value="">Selecione</option>
+                    </select>
+                    <span asp-validation-for="TipoVeiculo" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="FabricanteId" class="form-label"></label>
+                    <select asp-for="FabricanteId" class="form-control" asp-items="ViewBag.FabricanteId">
+                        <option value="">Selecione o Fabricante</option>
+                    </select>
+                    <span asp-validation-for="FabricanteId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="ConcessionariaId" class="form-label"></label>
+                    <select asp-for="ConcessionariaId" class="form-control" asp-items="ViewBag.ConcessionariaId">
+                        <option value="">Selecione o Fabricante</option>
+                    </select>
+                    <span asp-validation-for="ConcessionariaId" class="text-danger"></span>
+                </div>
+
+
+                <div class="form-group mb-4">
+                    <label asp-for="Descricao" class="form-label"></label>
+                    <input asp-for="Descricao" class="form-control" />
+                    <span asp-validation-for="Descricao" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                $('input[name="PrecoStringView"]').mask('000.000.000,00', { reverse: true });
+
+            });
+        </script>
+    }
+}

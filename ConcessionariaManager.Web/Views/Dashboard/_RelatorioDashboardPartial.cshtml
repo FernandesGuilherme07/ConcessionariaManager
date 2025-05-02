@@ -1,0 +1,32 @@
+﻿@using ConcessionariaManager.Web.Controllers
+@using ConcessionariaManager.Core.Models.Dashboard
+@model VendaRelatorioViewModel
+
+
+@if (Model.RangeInvalido)
+{
+    <div class="alert alert-danger">O período selecionado não pode ser maior que 31 dias.</div>
+}
+else if (!Model.TemDados)
+{
+    <div class="alert alert-warning">Nenhuma venda encontrada para o período @Model.Periodo.</div>
+}
+else
+{
+    <div class="mb-3">
+        <h4>Relatório de Vendas - <span class="text-primary">@Model.Periodo</span></h4>
+        <p>Total de vendas: <strong>@Model.TotalVendas</strong></p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <canvas height="220" width="300" id="graficoTipoVeiculo"></canvas>
+        </div>
+        <div class="col-md-4 mb-4">
+            <canvas height="220" width="300" id="graficoFabricante"></canvas>
+        </div>
+        <div class="col-md-4 mb-4">
+            <canvas height="220" width="300" id="graficoConcessionaria"></canvas>
+        </div>
+    </div>
+}

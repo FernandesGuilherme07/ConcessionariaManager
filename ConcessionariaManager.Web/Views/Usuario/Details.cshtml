@@ -1,0 +1,44 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model IdentityUser
+
+@{
+    ViewData["Title"] = "Detalhes do Usuário";
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Detalhes do Usuário</h2>
+
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
+        <dl class="row">
+            <dt class="col-sm-4">Email</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.Email)</dd>
+
+            <!-- Exibindo os roles atribuídos ao usuário -->
+            <dt class="col-sm-4">Perfis (Roles)</dt>
+            <dd class="col-sm-8">
+                @if (ViewData["Roles"] != null)
+                {
+                    var roles = ViewData["Roles"] as IList<string>;
+                    if (roles != null && roles.Any())
+                    {
+                        <ul>
+                            @foreach (var role in roles)
+                            {
+                                <li>@role</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span>Este usuário não tem perfis atribuídos.</span>
+                    }
+                }
+            </dd>
+        </dl>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Editar</a>
+            <a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+        </div>
+    </div>
+</div>
