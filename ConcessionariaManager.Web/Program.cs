@@ -1,6 +1,8 @@
 using ConcessionariaManager.Web;
+using ConcessionariaManager.Web.Data;
 using ConcessionariaManager.Web.Data.IdentitySeeds;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,9 @@ var localizationOptions = new RequestLocalizationOptions
 
 using (var scope = app.Services.CreateScope())
 {
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+
     var services = scope.ServiceProvider;
     await IdentitySeed.SeedAdminAsync(services);
 }

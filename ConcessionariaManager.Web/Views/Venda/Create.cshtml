@@ -1,6 +1,7 @@
 ﻿@model ConcessionariaManager.Core.Models.Venda
 
 @{
+    var hoje = DateTime.Today.ToString("yyyy-MM-dd");
     ViewData["Title"] = "Realizar Venda";
 }
 
@@ -48,7 +49,7 @@
 
                 <div class="form-group mb-3">
                     <label asp-for="DataVenda" class="form-label">Data da Venda</label>
-                    <input asp-for="DataVenda" class="form-control" type="date" />
+                    <input asp-for="DataVenda" class="form-control" max="@hoje" type="date" />
                     <span asp-validation-for="DataVenda" class="text-danger"></span>
                 </div>
 
@@ -78,7 +79,16 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
         <script>
+
             $(document).ready(function () {
+                $('input[name="PrecoVendaStringView"]').mask('000.000.000,00', { reverse: true });
+                $('input[name="CPFCliente"]').mask('000.000.000-00', { reverse: true });
+                $("#telefoneCliente").mask('(00) 00000-0000');
+                $("#telefoneCliente").on("blur", function () {
+                    var mask = $(this).val().replace(/\D/g, '').length > 10 ? '(00) 00000-0000' : '(00) 0000-0000';
+                    $(this).mask(mask);
+                });
+
                 $('#ConcessionariaId').change(function () {
                     var concessionariaId = $(this).val();
                     if (concessionariaId) {
@@ -97,27 +107,6 @@
                     }
                 });
             });
-            $(document).ready(function () {
-                // Corrigido campo de CPF
-                $('input[name="CPFCliente"]').mask('999.999.999-99', { reverse: true });
-
-                // Corrigido máscara de telefone
-                $("#telefoneCliente").inputmask({
-                    mask: ['(99) 9999-9999', '(99) 99999-9999'],
-                    onBeforePaste: function (pastedValue, opts) {
-                        var cleaned = pastedValue.replace(/\D/g, '');
-                        return cleaned.length === 10 ? "(99) 9999-9999" : "(99) 99999-9999";
-                    },
-                    onKeyValidation: function (key, result) {
-                        if (result) {
-                            var value = $("#telefoneCliente").val();
-                            if (value.indexOf('_') !== -1) {
-                                $("#telefoneCliente").val(value.replace('_', ''));
-                            }
-                        }
-                    }
-                });
-            )};
-		</script>
+        </script>
 	}
 }
