@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model IdentityUser
+
+@{
+    ViewData["Title"] = "Excluir Usuário";
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Excluir Usuário</h2>
+
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
+        <h5 class="text-danger mb-4 text-center">Tem certeza que deseja excluir este usuário?</h5>
+
+        <dl class="row">
+            <dt class="col-sm-4">Email</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.Email)</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post" class="mt-4 d-flex justify-content-between">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Excluir</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

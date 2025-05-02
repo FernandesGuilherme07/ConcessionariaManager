@@ -1,0 +1,47 @@
+﻿@model ConcessionariaManager.Core.Models.Venda
+
+@{
+    ViewData["Title"] = "Cancelar Venda";
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Cancelar Venda</h2>
+
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
+        <h5 class="text-danger mb-4 text-center">Tem certeza que deseja cancelar esta venda?</h5>
+
+        <dl class="row">
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.NomeCliente)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.NomeCliente)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.CPFCliente)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.CPFCliente)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.DataVenda)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.DataVenda)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.PrecoVenda)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.PrecoVenda)</dd>
+        </dl>
+
+        <form asp-action="ConfirmarCancelamento" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="MotivoDoCancelameto" class="control-label"></label>
+                <textarea asp-for="MotivoDoCancelameto" class="form-control" rows="4" required></textarea>
+                <span asp-validation-for="MotivoDoCancelameto" class="text-danger"></span>
+            </div>
+
+            <div class="mt-4 d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+                <button type="submit" class="btn btn-danger">Confirmar Cancelamento</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

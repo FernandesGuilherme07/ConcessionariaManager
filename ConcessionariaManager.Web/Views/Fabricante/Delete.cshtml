@@ -1,0 +1,40 @@
+@model ConcessionariaManager.Core.Models.Fabricante
+
+@{
+    ViewData["Title"] = "Excluir Fabricante";
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Excluir Fabricante</h2>
+
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
+        <h5 class="text-danger mb-4 text-center">Tem certeza que deseja excluir este fabricante?</h5>
+
+        <dl class="row">
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Nome)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.Nome)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.PaisOrigem)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.PaisOrigem)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.AnoFundacao)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.AnoFundacao)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Website)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.Website)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.CreatedAt)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.CreatedAt)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(m => m.UpdatedAt)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(m => m.UpdatedAt)</dd>
+        </dl>
+
+        <form asp-action="Delete" class="mt-4 d-flex justify-content-between">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Excluir</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+
+    </div>
+</div>

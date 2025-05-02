@@ -1,0 +1,72 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<IdentityUser>
+
+@{
+    ViewData["Title"] = "Usuários";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">Usuários</h1>
+    <a asp-action="Create" class="btn btn-primary">
+        + Criar Novo Usuário
+    </a>
+</div>
+
+<!-- Filtros -->
+<form asp-action="Index" method="get" class="mb-4">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <input type="text" name="email" value="@ViewData["email"]" class="form-control" placeholder="Digite seu e-mail..." />
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-outline-primary w-50">Pesquisar</button>
+            <a asp-action="Index" class="btn btn-outline-secondary w-50">Limpar</a>
+        </div>
+    </div>
+</form>
+
+<!-- Tabela de Usuários -->
+<div class="table-responsive">
+    <table class="table table-hover table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.First().Email)</th>
+                <th>Nome do usuário</th>
+                <th class="text-center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => user.Email)</td>
+                    <td>@Html.DisplayFor(modelItem => user.UserName)</td>
+                    <td class="text-center">
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-warning m-1">Editar Perfil</a>
+                            <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-info m-1">Detalhes</a>
+                            <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-danger m-1">Excluir</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Paginação -->
+<div class="d-flex justify-content-center">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new
+    {
+        page,
+        email = ViewData["email"]
+    }), new PagedListRenderOptions
+    {
+        UlElementClasses = new[] { "pagination" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" },
+        ActiveLiElementClass = "active",
+    })
+</div>

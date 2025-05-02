@@ -1,0 +1,52 @@
+@model ConcessionariaManager.Core.Models.Veiculo
+
+@{
+    ViewData["Title"] = "Detalhes do Veículo";
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Detalhes do Veículo</h2>
+
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
+        <dl class="row">
+            <dt class="col-sm-4">Modelo:</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Modelo)</dd>
+
+            <dt class="col-sm-4">Ano de Fabricão:</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.AnoFabricacao)</dd>
+
+            <dt class="col-sm-4">Placa:</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Placa)</dd>
+
+            <dt class="col-sm-4">Preço:</dt>
+            <dd class="col-sm-8">@Model.Preco.ToString("C")</dd>
+
+            <dt class="col-sm-4">Situação:</dt>
+            <dd class="col-sm-8">@(@Model.Vendido ? "Vendido" : "Disponível")</dd>
+
+            <dt class="col-sm-4">Tipo de Veículo:</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.TipoVeiculo)</dd>
+
+            <dt class="col-sm-4">Fabricante:</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Fabricante!.Nome)</dd>
+
+
+            <dt class="col-sm-4">Concessionária:</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Concessionaria!.Nome)</dd>
+
+            <dt class="col-sm-4">Descrição:</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Descricao)</dd>
+
+            <dt class="col-sm-4">Data de Criação:</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.CreatedAt)</dd>
+
+            <dt class="col-sm-4">Data de Atualização:</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.UpdatedAt)</dd>
+        </dl>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Editar</a>
+            <a asp-action="Index" class="btn btn-outline-secondary">Voltar para a lista</a>
+        </div>
+    </div>
+</div>

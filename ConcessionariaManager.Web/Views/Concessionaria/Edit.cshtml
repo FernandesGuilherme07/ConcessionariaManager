@@ -1,0 +1,171 @@
+@model ConcessionariaManager.Core.Models.Concessionaria
+
+@{
+    ViewData["Title"] = "Editar Concessionária";
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Editar Concessionária</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-action="Edit" class="card shadow-sm p-4">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Nome" class="form-label"></label>
+                    <input asp-for="Nome" class="form-control" />
+                    <span asp-validation-for="Nome" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Telefone" class="form-label"></label>
+                    <input asp-for="Telefone" class="form-control" id="telefone" />
+                    <span asp-validation-for="Telefone" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="CapacidadeMaximaDeVeiculos" class="form-label"></label>
+                    <input asp-for="CapacidadeMaximaDeVeiculos" class="form-control" />
+                    <span asp-validation-for="CapacidadeMaximaDeVeiculos" class="text-danger"></span>
+                </div>
+
+                <h4 class="mt-4">Endereço</h4>
+                <div class="form-group mb-3">
+                    <label asp-for="Endereco.CEP" class="form-label"></label>
+                    <input asp-for="Endereco.CEP" class="form-control" id="cep" value="@Model.Endereco?.CEP" />
+                    <span asp-validation-for="Endereco.CEP" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Endereco.Rua" class="form-label"></label>
+                    <input asp-for="Endereco.Rua" class="form-control" id="logradouro" disabled />
+                    <span asp-validation-for="Endereco.Rua" class="text-danger"></span>
+                    <input type="hidden" id="logradouro_hidden" name="Endereco.Rua" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Endereco.Bairro" class="form-label"></label>
+                    <input asp-for="Endereco.Bairro" class="form-control" id="bairro" disabled />
+                    <span asp-validation-for="Endereco.Bairro" class="text-danger"></span>
+                    <input type="hidden" id="bairro_hidden" name="Endereco.Bairro" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Endereco.Cidade" class="form-label"></label>
+                    <input asp-for="Endereco.Cidade" class="form-control" id="localidade" disabled />
+                    <span asp-validation-for="Endereco.Cidade" class="text-danger"></span>
+                    <input type="hidden" id="localidade_hidden" name="Endereco.Cidade" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Endereco.Estado" class="form-label"></label>
+                    <input asp-for="Endereco.Estado" class="form-control" id="uf" disabled />
+                    <span asp-validation-for="Endereco.Estado" class="text-danger"></span>
+                    <input type="hidden" id="uf_hidden" name="Endereco.Estado" />
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="Endereco.Numero" class="form-label"></label>
+                    <input asp-for="Endereco.Numero" class="form-control" id="numero" />
+                    <span asp-validation-for="Endereco.Numero" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="Endereco.Complemento" class="form-label"></label>
+                    <input asp-for="Endereco.Complemento" class="form-control" id="complemento" />
+                    <span asp-validation-for="Endereco.Complemento" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        <script>
+            $(document).ready(function() {
+                // Mascarar telefone com 10 ou 11 dígitos
+                $("#telefone").inputmask({
+                    mask: ['(99) 9999-9999', '(99) 99999-9999'], // Mascaras para 10 e 11 dígitos
+                    onBeforePaste: function (pastedValue, opts) {
+                        var cleaned = pastedValue.replace(/\D/g, ''); 
+                        return cleaned.length === 10 ? "(99) 9999-9999" : "(99) 99999-9999"; 
+                    },
+                    onKeyValidation: function (key, result) {
+                        if (result) {
+                            var value = $("#telefone").val();
+                            if (value.indexOf('_') !== -1) {
+                                $("#telefone").val(value.replace('_', ''));
+                            }
+                        }
+                    }
+                });
+            });
+
+            $("#telefone").on('input', function () {
+                var telefone = $(this).val().replace(/\D/g, '');
+                var telefoneValido = /^[0-9]{10,11}$/.test(telefone); 
+
+                if (!telefoneValido) {
+                    $(this).next('.text-danger').text('Número de telefone inválido.'); 
+                } else {
+                    $(this).next('.text-danger').text(''); 
+                }
+            });
+
+            $("#cep").inputmask('99999-999');
+
+            function preencherEnderecoPorCep(cep) {
+                fetch('https://viacep.com.br/ws/' + cep + '/json/')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.erro) {
+                            alert('CEP não encontrado.');
+                            return;
+                        }
+                        document.getElementById('logradouro').value = data.logradouro || '';
+                        document.getElementById('bairro').value = data.bairro || '';
+                        document.getElementById('localidade').value = data.localidade || '';
+                        document.getElementById('uf').value = data.uf || '';
+
+                        document.getElementById('logradouro_hidden').value = data.logradouro || '';
+                        document.getElementById('bairro_hidden').value = data.bairro || '';
+                        document.getElementById('localidade_hidden').value = data.localidade || '';
+                        document.getElementById('uf_hidden').value = data.uf || '';
+                    })
+                    .catch(error => {
+                        console.error('Erro ao buscar o CEP: ', error);
+                        alert('Erro ao buscar o CEP.');
+                    });
+            }
+
+            // Disparar evento de input caso o CEP já esteja preenchido ao carregar a página
+            $("#cep").on('input', function () {
+                var cep = this.value.replace(/\D/g, '');
+                if (cep.length === 8) {
+                    preencherEnderecoPorCep(cep);
+                }
+            });
+
+            // Caso o CEP esteja preenchido ao carregar a página, disparar o evento para preencher o endereço automaticamente
+            var cepInicial = $("#cep").val().replace(/\D/g, '');
+            if (cepInicial.length === 8) {
+                preencherEnderecoPorCep(cepInicial);
+            };
+        </script>
+    }
+}

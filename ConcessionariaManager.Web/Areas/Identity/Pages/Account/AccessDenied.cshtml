@@ -1,0 +1,13 @@
+﻿@page
+@model AccessDeniedModel
+@{
+    ViewData["Title"] = "Acesso negado";
+}
+
+<div class="text-center" style="margin-top: 50px;">
+    <header>
+        <h1 class="text-danger">@ViewData["Title"]</h1>
+        <p class="text-danger">Você não tem acesso a este recurso.</p>
+        <a href="javascript:history.back()" class="btn btn-primary">Voltar</a>
+    </header>
+</div>
