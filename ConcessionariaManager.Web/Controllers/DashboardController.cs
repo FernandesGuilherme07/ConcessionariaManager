@@ -1,4 +1,3 @@
-using ClosedXML.Excel;
 using ConcessionariaManager.Core.Interfaces.Services;
 using ConcessionariaManager.Core.Models.Dashboard;
 using ConcessionariaManager.Web.Core.Interfaces.Services;
