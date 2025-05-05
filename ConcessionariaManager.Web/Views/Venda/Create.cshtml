@@ -103,7 +103,6 @@
                     $.getJSON('/Venda/ObterVeiculosPorConcessionaria', { concessionariaId: concessionariaId }, function (data) {
                         var veiculoSelect = $('#VeiculoId');
 
-                        console.log("passei")
                         veiculoSelect.empty();
                         veiculoSelect.append('<option value="">Selecione o veículo</option>');
                         $.each(data, function (i, veiculo) {

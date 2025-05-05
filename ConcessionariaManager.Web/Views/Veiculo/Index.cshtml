@@ -21,28 +21,13 @@
         <div class="col-md-2">
             <select name="tipoVeiculo" class="form-select">
                 <option value="">Todos os Tipos</option>
-                bool isSelected = ViewData["fabricanteId"]?.ToString() == fabricante.Id.ToString();
                 <option value="Carro" >Carro</option>
                 <option value="Moto">Moto</option>
                 <option value="Caminhao">Caminhão</option>
 
             </select>
         </div>
-        <div class="col-md-2">
-            <select name="fabricanteId" class="form-select">
-                <option value="">Todos os Fabricantes</option>
-
-                @if (ViewBag.Fabricantes is List<ConcessionariaManager.Core.Models.Fabricante> fabricantes)
-                {
-                    foreach (var fabricante in fabricantes)
-                    {
-                        bool isSelected = ViewData["fabricanteId"]?.ToString() == fabricante.Id.ToString();
-                        <option value="@fabricante.Id" selected="@(isSelected)"> @fabricante.Nome</option>
-                    }
-                }
-            </select>
-        </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             <input type="number" name="anoFabricacao" value="@ViewData["anoFabricacao"]" class="form-control" placeholder="Ano Fabricação" />
         </div>
         <div class="col-md-3 d-flex gap-2">

@@ -46,8 +46,6 @@
         function renderChart(canvasId, label, data) {
             const ctx = document.getElementById(canvasId).getContext('2d');
 
-            console.log("ctx", ctx)
-            console.log("chartInstances[canvasId]", chartInstances[canvasId])
             if (chartInstances[canvasId]) {
                 chartInstances[canvasId].destroy();
             }

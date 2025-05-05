@@ -98,9 +98,8 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
         <script>
             $(document).ready(function() {
-                // Mascarar telefone com 10 ou 11 dígitos
                 $("#telefone").inputmask({
-                    mask: ['(99) 9999-9999', '(99) 99999-9999'], // Mascaras para 10 e 11 dígitos
+                    mask: ['(99) 9999-9999', '(99) 99999-9999'], 
                     onBeforePaste: function (pastedValue, opts) {
                         var cleaned = pastedValue.replace(/\D/g, ''); 
                         return cleaned.length === 10 ? "(99) 9999-9999" : "(99) 99999-9999"; 

@@ -1,0 +1,78 @@
+﻿@using ConcessionariaManager.Core.Models.AppLog.ConcessionariaManager.Core.Models.AppLog
+@using ConcessionariaManager.Web.Controllers
+@using ConcessionariaManager.Core.Models.AppLog
+@model LogViewModel
+
+@{
+    var hoje = DateTime.Today.ToString("yyyy-MM-dd");
+    ViewData["Title"] = "Registros de Logs";
+}
+
+<div class="container py-5">
+    <h1 class="mb-4">Registros de Logs</h1>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-2">
+            <input type="text" name="user" class="form-control" placeholder="Usuário"
+                   value="@Model.User" />
+        </div>
+        <div class="col-md-2">
+            <input type="date" name="date" class="form-control"
+                   value="@(Model.Date?.ToString("yyyy-MM-dd"))" max="@hoje" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">Limpar</a>
+        </div>
+    </form>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Usuário</th>
+                <th>Ação</th>
+                <th>Tela</th>
+                <th>Data e Hora (UTC)</th>
+                <th>Detalhes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model.Logs)
+            {
+                <tr>
+                    <td>@log.User</td>
+                    <td>@log.Action</td>
+                    <td>@log.Screen</td>
+                    <td>@log.Date.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                    <td>
+                        <ul class="mb-0">
+                            @if (log.LogDetails != null)
+                            {
+                                foreach (var detail in log.LogDetails)
+                                {
+                                    <li><strong>@detail.Field:</strong> "@detail.OldValue" → "@detail.NewValue"</li>
+                                }
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new {
+                        user = Model.User,
+                        action = Model.Action,
+                        screen = Model.Screen,
+                        date = Model.Date?.ToString("yyyy-MM-dd"),
+                        page = i })">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>

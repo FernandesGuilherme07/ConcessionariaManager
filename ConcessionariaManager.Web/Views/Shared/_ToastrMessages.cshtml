@@ -1,0 +1,23 @@
+﻿@using System.Text.Json
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(function () {
+        @if (TempData["Sucesso"] != null)
+        {
+            <text>toastr.success(@Html.Raw(JsonSerializer.Serialize(TempData["Sucesso"])));</text>
+        }
+        @if (TempData["Erro"] != null)
+        {
+            <text>toastr.error(@Html.Raw(JsonSerializer.Serialize(TempData["Erro"])));</text>
+        }
+        @if (TempData["Info"] != null)
+        {
+            <text>toastr.info(@Html.Raw(JsonSerializer.Serialize(TempData["Info"])));</text>
+        }
+        @if (TempData["Alerta"] != null)
+        {
+            <text>toastr.warning(@Html.Raw(JsonSerializer.Serialize(TempData["Alerta"])));</text>
+        }
+    });
+</script>

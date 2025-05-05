@@ -1,4 +1,4 @@
-﻿
+﻿@using System.Text.Json
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ConcessionariaManager.Web.styles.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
+    <partial name="_ToastrMessages" />
+
 </head>
 <body>
     <header>
@@ -33,12 +36,14 @@
         <div class="container">
             &copy; 2025 - ConcessionariaManager
         </div>
-    </footer>
+	</footer>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/jquery.inputmask.js"></script>
+	<script src="~/js/jquery.inputmask.js"></script>
+	<script src="~/js/site.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
