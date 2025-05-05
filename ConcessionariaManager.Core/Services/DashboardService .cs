@@ -18,11 +18,16 @@ namespace ConcessionariaManager.Core.Services
 
         public async Task<List<RelatorioVendaItemViewModel>> ExportarRelatorio(DateTime dataInicio, DateTime dataFim)
         {
+            if (dataFim < dataInicio)
+                throw new ArgumentException("A data final não pode ser menor que a data inicial.", nameof(dataFim));
 
             return await _repository.ObterDadosParaExportacao(dataInicio, dataFim);
         }
         public async Task<VendaRelatorioViewModel> GerarRelatorioAsync(DateTime dataInicio, DateTime dataFim)
         {
+            if (dataFim < dataInicio)
+                throw new ArgumentException("A data final não pode ser menor que a data inicial.", nameof(dataFim));
+
             string cacheKey = $"{CachePrefix}:{dataInicio:yyyyMMdd}:{dataFim:yyyyMMdd}";
 
             var cache = await _cacheService.GetAsync<VendaRelatorioViewModel>(cacheKey);

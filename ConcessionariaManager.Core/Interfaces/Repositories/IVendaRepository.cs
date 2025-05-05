@@ -4,7 +4,7 @@ namespace ConcessionariaManager.Core.Interfaces.Repositories
 {
     public interface IVendaRepository
     {
-        IQueryable<Venda> ObterVendas(string busca);
+        IQueryable<Venda> ObterVendas(string modelo, string cliente);
         IQueryable<Venda> ObterVendas();
         Task CancelarVendaAsync(Venda venda);
         IQueryable<Veiculo> ObterVeiculosList();

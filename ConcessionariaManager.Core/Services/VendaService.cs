@@ -50,20 +50,12 @@ namespace ConcessionariaManager.Core.Services
             if (DateTime.Now > venda.DataVenda.AddMonths(3))
                 return (false, "A venda não pode ser cancelada após 3 meses da data da venda.");
 
-            using var transaction = await _repository.BeginTransactionAsync();
-            try
-            {
-                venda.Cancelada = true;
-                venda.MotivoDoCancelameto = motivo;
-                venda.Veiculo!.Vendido = false;
+            venda.Cancelada = true;
+            venda.MotivoDoCancelameto = motivo;
+            venda.Veiculo!.Vendido = false;
 
-                await _repository.CancelarVendaAsync(venda);
-                return (true, null);
-            }
-            catch
-            {
-                return (false, "Erro ao cancelar a venda.");
-            }
+            await _repository.CancelarVendaAsync(venda);
+            return (true, null);
         }
     }
 

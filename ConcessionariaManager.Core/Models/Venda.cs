@@ -9,12 +9,12 @@ namespace ConcessionariaManager.Core.Models
         [Display(Name = "Conssecionária")]
         [Required(ErrorMessage = "A concessionária é obrigatória.")]
         public int ConcessionariaId { get; set; }
-        public required Concessionaria? Concessionaria { get; set; }
+        public Concessionaria? Concessionaria { get; set; }
 
         [Display(Name = "Modelo do veículo")]
         [Required(ErrorMessage = "O veículo é obrigatório.")]
         public int VeiculoId { get; set; }
-        public required Veiculo? Veiculo { get; set; }
+        public Veiculo? Veiculo { get; set; }
 
         [Display(Name = "Nome do cliente")]
         [Required(ErrorMessage = "O nome do cliente é obrigatório.")]
@@ -28,7 +28,7 @@ namespace ConcessionariaManager.Core.Models
 
         [Display(Name = "Telefone do cliente")]
         [Required(ErrorMessage = "O telefone do cliente é obrigatório.")]
-        public string TelefoneCliente { get; set; } = string.Empty;
+        public string? Telefone { get; set; }
 
         [Display(Name = "Data da venda")]
         [Required(ErrorMessage = "A data da venda é obrigatória.")]
