@@ -39,7 +39,8 @@ namespace ConcessionariaManager.Web.Data.Mappings
                 .IsRequired()
                 .HasMaxLength(11);
 
-            builder.Property(v => v.TelefoneCliente)
+            builder.Property(v => v.Telefone)
+                .HasColumnName("TelefoneCliente")
                 .IsRequired()
                 .HasMaxLength(20);
 

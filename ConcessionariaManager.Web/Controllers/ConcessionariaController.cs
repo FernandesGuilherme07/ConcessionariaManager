@@ -74,6 +74,7 @@ namespace ConcessionariaManager.Web.Controllers
         }
 
         // GET: Concessionaria/Create
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create()
         {
             return View();
@@ -107,7 +108,7 @@ namespace ConcessionariaManager.Web.Controllers
 
                 _context.Add(concessionaria);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Concessionária criada com sucesso!";
+                TempData["Successo"] = "Concessionária criada com sucesso!";
                 return RedirectToAction(nameof(Index));
             }
             return View(concessionaria);
@@ -149,7 +150,7 @@ namespace ConcessionariaManager.Web.Controllers
                     concessionaria.UpdatedAt = DateTime.UtcNow;
                     _context.Update(concessionaria);
                     await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "Concessionária atualizada com sucesso!";
+                    TempData["Successo"] = "Concessionária atualizada com sucesso!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {

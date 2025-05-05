@@ -1,38 +1,30 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ConcessionariaManager.Core.Models;
-using ConcessionariaManager.Web.Data;
 using Microsoft.AspNetCore.Authorization;
 using X.PagedList.Extensions;
+using ConcessionariaManager.Core.Interfaces.Repositories;
 
 namespace ConcessionariaManager.Web.Controllers
 {
     public class FabricanteController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IFabricanteRepository _repository;
 
-        public FabricanteController(ApplicationDbContext context)
+        public FabricanteController(IFabricanteRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
-
-        // GET: Fabricante
         [Authorize]
         public async Task<IActionResult> Index(string searchString, int? page)
         {
-            var query = _context.Fabricantes.AsQueryable();
-
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                query = query.Where(f => f.Nome.Contains(searchString));
-            }
+            var query = _repository.GetAll(searchString).AsQueryable();
 
             ViewData["searchString"] = searchString;
 
             int pageSize = 10;
             int pageNumber = page ?? 1;
 
-            var pagedList = query.OrderByDescending(f => f.Nome).ToPagedList(pageNumber, pageSize);
+            var pagedList = query.ToPagedList(pageNumber, pageSize);
             return View(pagedList);
         }
 
@@ -45,8 +37,7 @@ namespace ConcessionariaManager.Web.Controllers
                 return NotFound();
             }
 
-            var fabricante = await _context.Fabricantes
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var fabricante = await _repository.GetByIdAsync(id);
             if (fabricante == null)
             {
                 return NotFound();
@@ -63,8 +54,6 @@ namespace ConcessionariaManager.Web.Controllers
         }
 
         // POST: Fabricante/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
@@ -72,15 +61,16 @@ namespace ConcessionariaManager.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (_context.Fabricantes.Any(c => c.Nome == fabricante.Nome))
+                if (await _repository.ExistsByNameAsync(fabricante.Nome))
                 {
                     ModelState.AddModelError("Nome", "O Nome já está em uso.");
                     return View(fabricante);
                 }
-                _context.Add(fabricante);
-                await _context.SaveChangesAsync();
+                await _repository.AddAsync(fabricante);
+                TempData["Sucesso"] = "Fábricante criado com sucesso!";
                 return RedirectToAction(nameof(Index));
             }
+
             return View(fabricante);
         }
 
@@ -93,13 +83,13 @@ namespace ConcessionariaManager.Web.Controllers
                 return NotFound();
             }
 
-            var fabricante = await _context.Fabricantes.FindAsync(id);
+            var fabricante = await _repository.GetByIdAsync(id);
             if (fabricante == null)
             {
                 return NotFound();
             }
 
-            if (_context.Fabricantes.Any(c => c.Nome == fabricante.Nome && c.Id != id))
+            if (await _repository.ExistsByNameAsync(fabricante.Nome, id))
             {
                 ModelState.AddModelError("Nome", "O Nome já está em uso.");
                 return View(fabricante);
@@ -109,8 +99,6 @@ namespace ConcessionariaManager.Web.Controllers
         }
 
         // POST: Fabricante/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
@@ -124,15 +112,20 @@ namespace ConcessionariaManager.Web.Controllers
             if (ModelState.IsValid)
             {
 
-                if (_context.Fabricantes.Any(c => c.Nome == fabricante.Nome && c.Id != id))
+                if (await _repository.ExistsByNameAsync(fabricante.Nome, id))
                 {
                     ModelState.AddModelError("Nome", "O Nome já está em uso.");
                     return View(fabricante);
                 }
-                fabricante.UpdatedAt = DateTime.Now;
+                var fabricanteEditado = await _repository.GetByIdAsync(id);
+                fabricanteEditado.Nome = fabricante.Nome;
+                fabricanteEditado.PaisOrigem = fabricante.PaisOrigem;
+                fabricanteEditado.AnoFundacao = fabricante.AnoFundacao;
+                fabricanteEditado.Website = fabricante.Website;
+                fabricanteEditado.UpdatedAt = DateTime.Now;
 
-                _context.Update(fabricante);
-                await _context.SaveChangesAsync();
+                await _repository.UpdateAsync(fabricanteEditado);
+                TempData["Successo"] = "Fábricante atualizada com sucesso!";
 
                 return RedirectToAction(nameof(Index));
             }
@@ -148,8 +141,7 @@ namespace ConcessionariaManager.Web.Controllers
                 return NotFound();
             }
 
-            var fabricante = await _context.Fabricantes
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var fabricante = await _repository.GetByIdAsync(id);
             if (fabricante == null)
             {
                 return NotFound();
@@ -164,20 +156,12 @@ namespace ConcessionariaManager.Web.Controllers
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var fabricante = await _context.Fabricantes.FindAsync(id);
+            var fabricante = await _repository.GetByIdAsync(id);
             if (fabricante != null)
             {
-                fabricante.IsDeleted = true;
-                _context.Fabricantes.Update(fabricante);
+                await _repository.SoftDeleteAsync(id);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool FabricanteExists(int id)
-        {
-            return _context.Fabricantes.Any(e => e.Id == id);
         }
     }
 }

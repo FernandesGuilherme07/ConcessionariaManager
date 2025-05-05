@@ -15,10 +15,11 @@ namespace ConcessionariaManager.Web.Data.Repositories
             _context = context;
         }
 
-        public IQueryable<Venda> ObterVendas(string busca) => _context.Vendas
+        public IQueryable<Venda> ObterVendas(string modelo, string cliente) => _context.Vendas
                 .Include(v => v.Veiculo)
                 .Include(v => v.Concessionaria)
-                .WhereIf(busca, v => v.NomeCliente.Contains(busca));
+                .WhereIf(cliente, v => v.NomeCliente.Contains(cliente))
+                .WhereIf(modelo, v => v.Veiculo.Modelo.Contains(modelo));
 
         public IQueryable<Venda> ObterVendas() => _context.Vendas;
 
@@ -58,7 +59,6 @@ namespace ConcessionariaManager.Web.Data.Repositories
             var transaction = await _context.Database.BeginTransactionAsync();
             return transaction;
         }
-
 
         public async Task CancelarVendaAsync(Venda venda)
         {

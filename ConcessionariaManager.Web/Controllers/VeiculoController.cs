@@ -13,7 +13,7 @@ namespace ConcessionariaManager.Web.Controllers
     public class VeiculoController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        
         public VeiculoController(ApplicationDbContext context)
         {
             _context = context;
@@ -83,8 +83,6 @@ namespace ConcessionariaManager.Web.Controllers
         }
 
         // POST: Veiculo/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Gerente")]
@@ -95,6 +93,7 @@ namespace ConcessionariaManager.Web.Controllers
             {
                 _context.Add(veiculo);
                 await _context.SaveChangesAsync();
+                TempData["Successo"] = "Veículo criado com sucesso!";
                 return RedirectToAction(nameof(Index));
             }
             ViewData["FabricanteId"] = new SelectList(_context.Fabricantes, "Id", "Nome", veiculo.FabricanteId);
@@ -124,8 +123,6 @@ namespace ConcessionariaManager.Web.Controllers
         }
 
         // POST: Veiculo/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Gerente")]
@@ -141,8 +138,9 @@ namespace ConcessionariaManager.Web.Controllers
             {
                 try
                 {
-                    veiculo.UpdatedAt = DateTime.Now;
-                    _context.Update(veiculo);
+                    var veiculoEdicao = await _context.Veiculos.FindAsync(id);
+                    veiculoEdicao.UpdatedAt = DateTime.Now;
+                    _context.Veiculos.Update(veiculoEdicao);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -155,7 +153,8 @@ namespace ConcessionariaManager.Web.Controllers
                     {
                         throw;
                     }
-                }
+                    }
+                TempData["Successo"] = "Veículo Editado com sucesso!";
                 return RedirectToAction(nameof(Index));
             }
             ViewData["FabricanteId"] = new SelectList(_context.Fabricantes, "Id", "Nome", veiculo.FabricanteId);
@@ -197,6 +196,7 @@ namespace ConcessionariaManager.Web.Controllers
             }
 
             await _context.SaveChangesAsync();
+            TempData["Successo"] = "Veículo deletado com sucesso!";
             return RedirectToAction(nameof(Index));
         }
 

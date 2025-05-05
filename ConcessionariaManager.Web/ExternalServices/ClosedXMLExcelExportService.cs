@@ -11,7 +11,6 @@ namespace ConcessionariaManager.Web.ExternalServices
             using var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Relatório de Vendas");
 
-            // Cabeçalhos
             worksheet.Cell(1, 1).Value = "Tipo Veículo";
             worksheet.Cell(1, 2).Value = "Fabricante";
             worksheet.Cell(1, 3).Value = "Concessionária";

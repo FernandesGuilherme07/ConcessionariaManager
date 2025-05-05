@@ -10,6 +10,7 @@ using ConcessionariaManager.Web.ExternalServices;
 using ConcessionariaManager.Web.Data.Repositories;
 using ConcessionariaManager.Core.Interfaces.Repositories;
 using ConcessionariaManager.Web.Core.Interfaces.Services;
+using ConcessionariaManager.Web.Data.Services;
 
 namespace ConcessionariaManager.Web
 {
@@ -50,12 +51,13 @@ namespace ConcessionariaManager.Web
             var connectionString = configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+            services.AddScoped<ILogService, LogService>();
+            services.AddScoped<LogSaveChangesInterceptor>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
             return services;
         }
-
         private static IServiceCollection AddLocalization(this IServiceCollection services)
         {
             services.AddLocalization(options => options.ResourcesPath = "Resources");
@@ -85,7 +87,7 @@ namespace ConcessionariaManager.Web
         private static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IDashboardService, DashboardService>();
-            services.AddScoped< IVendaService, VendaService>();
+            services.AddScoped< IVendaService, VendaService>(); 
 
             return services;
         }
@@ -93,7 +95,7 @@ namespace ConcessionariaManager.Web
         {
             services.AddScoped<IDashboardRepository, DashboardRepository>();
             services.AddScoped<IVendaRepository, VendaRepository>();
-
+            services.AddScoped<IFabricanteRepository, FabricanteRepository>();
             return services;
         }
         private static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)

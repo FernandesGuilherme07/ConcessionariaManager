@@ -21,9 +21,9 @@ namespace ConcessionariaManager.Web.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string searchString, int? page)
+        public async Task<IActionResult> Index(string modelo, string cliente, int? page)
         {
-            var vendas =  _repository.ObterVendas(searchString).ToPagedList(page ?? 1, 10);
+            var vendas =  _repository.ObterVendas(modelo, cliente).ToPagedList(page ?? 1, 10);
             return View(vendas);
         }
 
@@ -84,7 +84,7 @@ namespace ConcessionariaManager.Web.Controllers
                 TempData["Erro"] = "Venda não encontrada ou prazo expirado.";
                 return RedirectToAction(nameof(Index));
             }
-
+            TempData["Sucesso"] = "Venda realizada com sucesso.";
             return View(venda);
         }
 
@@ -102,6 +102,7 @@ namespace ConcessionariaManager.Web.Controllers
             var (sucesso, erro) = await _service.CancelarVendaAsync(id, MotivoDoCancelameto);
             if (!sucesso) TempData["Erro"] = erro;
 
+            TempData["Sucesso"] = "Cancelamento da venda confirmado.";
             return RedirectToAction(nameof(Index));
         }
     }

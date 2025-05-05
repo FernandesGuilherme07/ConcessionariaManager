@@ -162,7 +162,7 @@ public class UsuarioController : Controller
 
         if (user.UserName == User.Identity.Name)
         {
-            ModelState.AddModelError(string.Empty, "Você não pode excluir a sua própria conta.");
+            TempData["Erro"] = "Você não pode excluir a sua própria conta.";
             return View(user);
         }
 
@@ -212,12 +212,11 @@ public class UsuarioController : Controller
         {
             ModelState.AddModelError("Input.Email", "Email já está em uso.");
         }
-
-        var user = new IdentityUser
+        IdentityUser user = new()
         {
             UserName = model.UserName,
             Email = model.Input.Email,
-            EmailConfirmed = true
+            EmailConfirmed = true,
         };
 
         var result = await _userManager.CreateAsync(user, model.Input.Password);
@@ -231,12 +230,6 @@ public class UsuarioController : Controller
 
             return RedirectToAction(nameof(Index));
         }
-
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError("", error.Description);
-        }
-
         model.AvailableRoles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
         return View(model);
     }
