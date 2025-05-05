@@ -42,9 +42,9 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="TelefoneCliente" class="form-label">Telefone</label>
-                    <input asp-for="TelefoneCliente" class="form-control" id="telefoneCliente" />
-                    <span asp-validation-for="TelefoneCliente" class="text-danger"></span>
+                    <label asp-for="Telefone" class="form-label">Telefone</label>
+                    <input asp-for="Telefone" class="form-control" id="telefone" />
+                    <span asp-validation-for="Telefone" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3">
@@ -83,29 +83,36 @@
             $(document).ready(function () {
                 $('input[name="PrecoVendaStringView"]').mask('000.000.000,00', { reverse: true });
                 $('input[name="CPFCliente"]').mask('000.000.000-00', { reverse: true });
-                $("#telefoneCliente").mask('(00) 00000-0000');
-                $("#telefoneCliente").on("blur", function () {
-                    var mask = $(this).val().replace(/\D/g, '').length > 10 ? '(00) 00000-0000' : '(00) 0000-0000';
-                    $(this).mask(mask);
-                });
+                $("#telefone").mask('(00) 00000-0000');
+            });
 
-                $('#ConcessionariaId').change(function () {
-                    var concessionariaId = $(this).val();
-                    if (concessionariaId) {
-                        $.getJSON('/Venda/ObterVeiculosPorConcessionaria', { concessionariaId: concessionariaId }, function (data) {
-                            var veiculoSelect = $('#VeiculoId');
+            $("#telefone").on('input', function () {
+                var telefone = $(this).val().replace(/\D/g, '');
+                var telefoneValido = /^[0-9]{10,11}$/.test(telefone);
 
-                            console.log("passei")
-                            veiculoSelect.empty();
-                            veiculoSelect.append('<option value="">Selecione o veículo</option>');
-                            $.each(data, function (i, veiculo) {
-                                veiculoSelect.append('<option value="' + veiculo.id + '">' + veiculo.modelo + '</option>');
-                            });
+                if (!telefoneValido) {
+                    $(this).next('.text-danger').text('Número de telefone inválido.');
+                } else {
+                    $(this).next('.text-danger').text('');
+                }
+            });
+
+            $('#ConcessionariaId').change(function () {
+                var concessionariaId = $(this).val();
+                if (concessionariaId) {
+                    $.getJSON('/Venda/ObterVeiculosPorConcessionaria', { concessionariaId: concessionariaId }, function (data) {
+                        var veiculoSelect = $('#VeiculoId');
+
+                        console.log("passei")
+                        veiculoSelect.empty();
+                        veiculoSelect.append('<option value="">Selecione o veículo</option>');
+                        $.each(data, function (i, veiculo) {
+                            veiculoSelect.append('<option value="' + veiculo.id + '">' + veiculo.modelo + '</option>');
                         });
-                    } else {
-                        $('#VeiculoId').empty().append('<option value="">Selecione o veículo</option>');
-                    }
-                });
+                    });
+                } else {
+                    $('#VeiculoId').empty().append('<option value="">Selecione o veículo</option>');
+                }
             });
         </script>
 	}

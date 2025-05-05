@@ -1,9 +1,6 @@
 ﻿using ConcessionariaManager.Core.Interfaces.Repositories;
 using ConcessionariaManager.Core.Interfaces.Services;
-using ConcessionariaManager.Core.Interfaces;
 using ConcessionariaManager.Core.Models;
-using ConcessionariaManager.Core.Utils;
-using System.Collections;
 
 namespace ConcessionariaManager.Core.Services
 {
@@ -16,84 +13,57 @@ namespace ConcessionariaManager.Core.Services
             _repository = repository;
         }
 
-        public async Task<IPagedList<Venda>> ObterVendasPaginadasAsync(string? searchString, int pageNumber, int pageSize)
+        public async Task<List<object>> ObterVeiculosDisponiveisJsonAsync(int concessionariaId)
         {
-            var query = _repository.ObterVendas();
-
-            if (!string.IsNullOrEmpty(searchString))
-                query = query.Where(v => v.NomeCliente.Contains(searchString));
-
-            return await PagedList<Venda>.CreateAsync(query.OrderBy(v => v.DataVenda), pageNumber, pageSize);
+            var veiculos = await _repository.ObterVeiculosDisponiveisPorConcessionariaAsync(concessionariaId);
+            return veiculos.Select(v => new { v.Id, v.Modelo }).Cast<object>().ToList();
         }
 
-        public async Task<List<Veiculo>> ObterVeiculosPorConcessionariaAsync(int concessionariaId) =>
-            await _repository.ObterVeiculosPorConcessionariaAsync(concessionariaId);
-
-        public async Task<Venda?> ObterDetalhesVendaAsync(int id) =>
-            await _repository.ObterPorIdAsync(id);
-
-        public async Task<(bool sucesso, string? erro)> CriarVendaAsync(Venda venda)
+        public async Task<(bool Sucesso, string? Erro, Venda? Venda)> CriarVendaAsync(Venda venda)
         {
             venda.Cancelada = false;
             venda.ProtocoloVenda = Guid.NewGuid().ToString();
+            venda.CPFCliente = venda.CPFCliente.Replace(".", "").Replace("-", "").Trim();
+            var veiculo = await _repository.ObterVeiculoPorIdAsync(venda.VeiculoId);
+            if (veiculo == null) return (false, "Veículo não encontrado.", null);
 
-            var veiculo = _repository.ObterVendas()
-                .Select(v => v.Veiculo)
-                .FirstOrDefault(v => v.Id == venda.VeiculoId);
-
-            if (veiculo == null)
-                return (false, "Veículo não encontrado.");
+            if (veiculo.Vendido)
+                return (false, "Veículo já vendido.", null);
 
             if (venda.PrecoVenda > veiculo.Preco)
-                return (false, $"Preço da venda não pode ser maior que o preço do veículo (R$ {veiculo.Preco:N2})");
+                return (false, $"O preço da venda não pode ser maior que o preço do veículo (R$ {veiculo.Preco:N2}).", null);
 
-            await _repository.BeginTransactionAsync();
-            try
-            {
-                veiculo.Vendido = true;
-                await _repository.AdicionarAsync(venda);
-                await _repository.SaveChangesAsync();
-                await _repository.CommitTransactionAsync();
-                return (true, null);
-            }
-            catch
-            {
-                await _repository.RollbackTransactionAsync();
-                return (false, "Erro ao realizar a venda.");
-            }
+            veiculo.Vendido = true;
+            venda.Veiculo = veiculo;
+
+            await _repository.RealizarVendaAsync(venda);
+            return (true, null, venda);
+            
         }
 
-        public async Task<(bool sucesso, string? erro)> CancelarVendaAsync(int id, string motivo)
+        public async Task<(bool Sucesso, string? Erro)> CancelarVendaAsync(int id, string motivo)
         {
-            var venda = await _repository.ObterPorIdAsync(id);
-            if (venda == null || venda.Cancelada) return (false, null);
+            var venda = await _repository.ObterVendaPorIdAsync(id);
+            if (venda == null || venda.Cancelada)
+                return (false, "Venda inválida ou já cancelada.");
 
             if (DateTime.Now > venda.DataVenda.AddMonths(3))
-                return (false, "Venda não pode ser cancelada após 3 meses.");
+                return (false, "A venda não pode ser cancelada após 3 meses da data da venda.");
 
-            venda.Cancelada = true;
-            venda.MotivoDoCancelameto = motivo;
-            if (venda.Veiculo != null)
-                venda.Veiculo.Vendido = false;
-
-            await _repository.BeginTransactionAsync();
+            using var transaction = await _repository.BeginTransactionAsync();
             try
             {
-                _repository.Atualizar(venda);
-                await _repository.SaveChangesAsync();
-                await _repository.CommitTransactionAsync();
+                venda.Cancelada = true;
+                venda.MotivoDoCancelameto = motivo;
+                venda.Veiculo!.Vendido = false;
+
+                await _repository.CancelarVendaAsync(venda);
                 return (true, null);
             }
             catch
             {
-                await _repository.RollbackTransactionAsync();
                 return (false, "Erro ao cancelar a venda.");
             }
-        }
-
-        public async Task<IEnumerable<Concessionaria>> ObterConcessionariasAsync()
-        {
-            return await _repository.ObterConcessionariasAsync();
         }
     }
 

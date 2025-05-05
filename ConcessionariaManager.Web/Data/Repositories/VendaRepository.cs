@@ -1,53 +1,98 @@
 ﻿using ConcessionariaManager.Core.Interfaces.Repositories;
 using ConcessionariaManager.Core.Models;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore;
+using ConcessionariaManager.Core.Utils;
+using NuGet.Protocol.Core.Types;
 
 namespace ConcessionariaManager.Web.Data.Repositories
 {
     public class VendaRepository : IVendaRepository
     {
         private readonly ApplicationDbContext _context;
-        private IDbContextTransaction? _transaction;
 
         public VendaRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public IQueryable<Venda> ObterVendas() =>
-            _context.Vendas
+        public IQueryable<Venda> ObterVendas(string busca) => _context.Vendas
                 .Include(v => v.Veiculo)
                 .Include(v => v.Concessionaria)
-                .AsNoTracking();
+                .WhereIf(busca, v => v.NomeCliente.Contains(busca));
 
-        public async Task<Venda?> ObterPorIdAsync(int id) =>
-            await _context.Vendas
-                .Include(v => v.Veiculo)
-                .Include(v => v.Concessionaria)
-                .FirstOrDefaultAsync(v => v.Id == id);
+        public IQueryable<Venda> ObterVendas() => _context.Vendas;
 
-        public async Task<List<Veiculo>> ObterVeiculosPorConcessionariaAsync(int concessionariaId) =>
-            await _context.Veiculos
-                .Where(v => v.ConcessionariaId == concessionariaId)
-                .AsNoTracking()
-                .ToListAsync();
+        public IQueryable<Veiculo> ObterVeiculosList() => _context.Veiculos;
 
-        public async Task AdicionarAsync(Venda venda) => await _context.Vendas.AddAsync(venda);
-        public void Atualizar(Venda venda) => _context.Vendas.Update(venda);
+        public IQueryable<Concessionaria> ObterConcessionariasList() => _context.Concessionarias;
+        public async Task<Venda?> ObterVendaPorIdAsync(int id)
+            => await _context.Vendas.Include(v => v.Veiculo).Include(v => v.Concessionaria).FirstOrDefaultAsync(v => v.Id == id);
+
+        public async Task<List<Veiculo>> ObterVeiculosDisponiveisPorConcessionariaAsync(int concessionariaId)
+            => await _context.Veiculos
+                    .Where(v => v.ConcessionariaId == concessionariaId && !v.Vendido)
+                    .ToListAsync();
+
+        public async Task<Veiculo?> ObterVeiculoPorIdAsync(int id)
+            => await _context.Veiculos.FirstOrDefaultAsync(v => v.Id == id);
+
+        public async Task AdicionarVendaAsync(Venda venda)
+            => await _context.Vendas.AddAsync(venda);
+
+        public Task AtualizarVendaAsync(Venda venda)
+        {
+            _context.Vendas.Update(venda);
+            return Task.CompletedTask;
+        }
+
+        public Task AtualizarVeiculoAsync(Veiculo veiculo)
+        {
+            _context.Veiculos.Update(veiculo);
+            return Task.CompletedTask;
+        }
+
         public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
 
-        public async Task BeginTransactionAsync() =>
-            _transaction = await _context.Database.BeginTransactionAsync();
-
-        public async Task CommitTransactionAsync() => await _transaction?.CommitAsync();
-        public async Task RollbackTransactionAsync() => await _transaction?.RollbackAsync();
-
-        public async Task<IEnumerable<Concessionaria>> ObterConcessionariasAsync()
+        public async Task<IDisposable> BeginTransactionAsync()
         {
-            return await _context.Concessionarias
-                .AsNoTracking()
-                .ToListAsync();
+            var transaction = await _context.Database.BeginTransactionAsync();
+            return transaction;
+        }
+
+
+        public async Task CancelarVendaAsync(Venda venda)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                _context.Vendas.Update(venda);
+                _context.Veiculos.Update(venda.Veiculo!);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                transaction.Rollback();
+            }
+        }
+
+        public async Task RealizarVendaAsync(Venda venda)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                _context.Vendas.Add(venda);
+                _context.Veiculos.Update(venda.Veiculo!);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+            }
+            catch
+            {
+                transaction.Rollback();
+            }
         }
     }
 
